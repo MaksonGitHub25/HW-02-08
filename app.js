@@ -211,7 +211,8 @@ const tech = [
         ]
     ];
 
-const user = {};
+const users = [];
+
 
 function menu() {
     const userMenuChoise = prompt(`Выбери функцию:
@@ -229,22 +230,27 @@ function funcChooseHandler(userChoise) {
     switch (userChoise) {
         case 'a':
             checkConcreateCategory();
+            menu();
             break;
         
         case 'b':
             checkAllItem(tech);
+            menu();
             break;
 
         case 'c':
             sortAllItem();
+            menu();
             break;
 
         case 'd':
-            registerUser(user);
+            registerUser(users);
+            menu();
             break;
 
         case 'e':
             openBag();
+            menu();
             break;
 
         case 'f':
@@ -272,10 +278,19 @@ function checkAllItem(mainArray) {
 }
 
 function sortAllItem() {
-    console.log('sortAllItem');
+    if (/*сделать чек на функцию которая проверяет длину массива и если она < 1, то alert и return*/) {
+        
+    }
 }
 
-function registerUser(obj) {
+function registerUser(arrayForPush) {
+    if (checkUsersArrayOnFullness(arrayForPush)) {
+        alert('Вы не можете зарегистрировать больше 5 человек!');
+        return;
+    }
+
+    const user = {};
+
     alert('Пройдите легкую регистрацию, чтоб мы знали с кем имеем дело)');
 
     function checkName() {
@@ -314,12 +329,7 @@ function registerUser(obj) {
     function checkPassword() {
         userPassword = prompt('Какой у вас пароль?');
 
-        if (
-            _.isNaN(userPassword) /* для проверки чтоб пароль не был только числами */ 
-            && /\d/.test(userPassword) /* для проверки есть ли число в строке*/ 
-            && /короче здесь надо сделать проверку на спец символов негров, гы/.test(userPassword) /* для проверки на спец символы */
-            && !/s/.test(userPassword) /* для проверки чтоб не было пробелов */
-        ) {
+        if (!/[a-z]/.test(userPassword) || !/\d/.test(userPassword) || !/[!|,|"|:|.|\?|(|)|@|\-|\\|\/|;|_]/gi.test(userPassword)) {
             alert('Значение недопустимо!');
             checkPassword();
         }
@@ -327,15 +337,19 @@ function registerUser(obj) {
         return userPassword;
     }
 
-    obj['name'] = checkName();
-    obj['age'] = checkAge();
-    obj['email'] = checkEmail();
-    obj['password'] = checkPassword();
+    user['name'] = checkName();
+    user['age'] = checkAge();
+    user['email'] = checkEmail();
+    user['password'] = checkPassword();
 
-    console.log(obj);
+    arrayForPush.push(user);
+    console.log(arrayForPush);
+}
 
-    menu();
-    return;
+function checkUsersArrayOnFullness(arrayForCheck) {
+    if (arrayForCheck.length === 5) {
+        return true;
+    }
 }
 
 function openBag() {
@@ -402,15 +416,15 @@ menu();
 
 // 5) Сортировать : от большего к меньшему (по цене) , добавить к каждому товару рейтинг и дать возможность сортировать по рейтингу товары.
 
-// 6) Создать объект пользователя , у пользователя есть : имя , фамилия , возраст , логи и пароль.
+//* 6) Создать объект пользователя , у пользователя есть : имя , фамилия , возраст , логи и пароль.
 
-// Дать возможность зарегаться юзеру :
+//* Дать возможность зарегаться юзеру :
 // (Если пользователь не зарегистрирован , он не может использовать фильтры и сортировки)
 //* - Имя не менее 2х букв (не вкл)
 //* - Имел обязательно должен содержать @
-// - Пароль состоит из чисел , строк и спец. Символов.
+//* - Пароль состоит из чисел , строк и спец. Символов.
 //* - Если возраст юзера  меньше , чем 23 - он не может посетить категорию игрушечный . 
-// -Кол-во зарегистрированных пользователей не может превышать 5-ти персон .
+//* -Кол-во зарегистрированных пользователей не может превышать 5-ти персон .
 
 // Корзина
 // - При покупке - доб товар
@@ -419,9 +433,7 @@ menu();
 // Когда пользователь зарегистрирован , он получает первый кэш на который может приобрести что-либо .
 // Если при совершении покупки у юзера не хватает денег - написать сообщение , что “Нужно больше золота” , а иначе просто списать деньги с юзера .
 
-
 // Программа работает до тех пор пока юзер не захочет выйти.
-
 
 // Использовать(подсказка) : while , for , forEach , filter , sort , concat , reduce , reverse .
 
