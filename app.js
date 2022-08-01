@@ -90,7 +90,13 @@ c) gaming
 d) smart-watch
 e) smart-home`);
 
-    return userCategory = categoryChooseHandler(choosenCategory, userCategory);
+    if (/a|b|c|d|e/.test(choosenCategory)) {
+        return userCategory = categoryChooseHandler(choosenCategory, userCategory);
+    } else {
+        alert('Значение недопустимо!');
+        checkConcreateCategory(tech);
+        return;
+    }
 }
 
 function checkConcreateCategory(array) {
@@ -122,13 +128,80 @@ function checkAllItem(mainArray) {
     });
 }
 
+
 function sortAllItem(arrayForSort, users) {
     if (!checkUsersArrayOnEmpty(users)) {
         alert('Нету зарегистрированных пользователей!');
         return;
     }
 
+    const userSortFunctionChoose = prompt(`Как вы хотите сортировать товары:
+a) от меньшей цены к большой
+b) от большой цены к меньшой
+c) по самому маленькому рейтингу
+d) по самому большому рейтингу`);
+
+    if (!/a|b|c|d/.test(userSortFunctionChoose)) {
+        alert('Значение недопустимо!');
+        sortAllItem(arrayForSort, users);
+        return;
+    }
+
+    arrayForSort.forEach(function (elem) {
+        sortingArray(elem, userSortFunctionChoose);
+    });
+
+    console.log('----------------------------');
 }
+
+function sortingArray(arrayForSort, sortFunction) {
+    switch (sortFunction) {
+        case 'a':
+            arrayForSort.sort(function (a, b) {
+                if (a.price > b.price) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+            break;
+
+        case 'b':
+            arrayForSort.sort(function (a, b) {
+                if (a.price < b.price) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+            break;
+
+        case 'c':
+            arrayForSort.sort(function (a, b) {
+                if (a.rating > b.rating) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+            break;
+
+        case 'd':
+            arrayForSort.sort(function (a, b) {
+                if (a.rating < b.rating) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+            break;
+
+        default:
+            break;
+    }
+    console.log(arrayForSort);
+}
+
 
 function registerUser(arrayForPush) {
     if (checkUsersArrayOnFullness(arrayForPush)) {
@@ -188,6 +261,7 @@ function registerUser(arrayForPush) {
     user['age'] = checkAge();
     user['email'] = checkEmail();
     user['password'] = checkPassword();
+    user['money'] = 800;
 
     arrayForPush.push(user);
     console.log(arrayForPush);
@@ -262,12 +336,10 @@ menu();
 //* Товары - не менее 4 шт на категории.
 
 //* 3) С помощью промпт дать возможность пользователю выбрать в какую категорию он зайдет .
-// -Затем , предложить критерии к поиску , например : цена , экран , цвет , тд.
-// -Критерии должны формироваться сами , а не хардкодиться ( в это вам помогут ключи (у объекта) )
 
 //* 4) Просмотреть ВСЕ товары из ВСЕХ категорий
 
-// 5) Сортировать : от большего к меньшему (по цене) , добавить к каждому товару рейтинг и дать возможность сортировать по рейтингу товары.
+//* 5) Сортировать : от большего к меньшему (по цене) , добавить к каждому товару рейтинг и дать возможность сортировать по рейтингу товары.
 
 //* 6) Создать объект пользователя , у пользователя есть : имя , фамилия , возраст , логи и пароль.
 
