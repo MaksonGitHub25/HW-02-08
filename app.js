@@ -1,4 +1,6 @@
 const users = [];
+const bag = [];
+let wasItWorkOnce = false;
 
 function menu() {
     const userMenuChoise = prompt(`Выбери функцию:
@@ -20,7 +22,7 @@ function funcChooseHandler(userChoise) {
             break;
         
         case 'b':
-            checkAllItem(tech);
+            checkAllItemHandler(tech, wasItWorkOnce);
             menu();
             break;
 
@@ -35,7 +37,7 @@ function funcChooseHandler(userChoise) {
             break;
 
         case 'e':
-            openBag();
+            openBag(bag);
             menu();
             break;
 
@@ -117,8 +119,19 @@ function checkCategoryInObject(itemObject, categoryForSearch) {
     }
 }
 
+function checkAllItemHandler(mainArray) {
+    checkAllItem(mainArray);
+    wasItWorkOnce = true;
+
+    const itemToBuy = askWillUserBuySomething(mainArray);
+    console.log(itemToBuy);
+}
 
 function checkAllItem(mainArray) {
+    if (wasItWorkOnce) { // проверка что б оно не выводило несколько раз
+        return;
+    }
+
     mainArray.forEach(function (elem) {
         if (_.isArray(elem)) {
             checkAllItem(elem);
@@ -128,9 +141,32 @@ function checkAllItem(mainArray) {
     });
 }
 
+function askWillUserBuySomething(mainArray) {
+    const userItemToBuy = prompt(`Какой товары вы хотите купить? Напишите название товара, который вы хотите купить или напишите nothing, если не собираетесь ничего покупать`);
+
+    checkUserItemOnCorrect(mainArray, userItemToBuy);
+
+    return userItemToBuy;
+}
+
+function checkUserItemOnCorrect(mainArray, item) {
+    mainArray.forEach(function (elem) {
+        if (_.isArray(elem)) {
+            checkUserItemOnCorrect(elem, item);
+        } else if (_.isObject(elem)) {
+            if (item === 'nothing') {
+                return;
+            }
+            if (elem.title === item) {
+                bag.push(elem);
+            }
+        }
+    });
+}
+
 
 function sortAllItem(arrayForSort, users) {
-    if (!checkUsersArrayOnEmpty(users)) {
+    if (checkUsersArrayOnEmpty(users)) {
         alert('Нету зарегистрированных пользователей!');
         return;
     }
@@ -261,7 +297,7 @@ function registerUser(arrayForPush) {
     user['age'] = checkAge();
     user['email'] = checkEmail();
     user['password'] = checkPassword();
-    user['money'] = 800;
+    user['money'] = 1600;
 
     arrayForPush.push(user);
     console.log(arrayForPush);
@@ -274,14 +310,75 @@ function checkUsersArrayOnFullness(arrayForCheck) {
 }
 
 function checkUsersArrayOnEmpty(arrayForCheck) {
-    if (arrayForCheck.length === 1) {
+    if (arrayForCheck.length === 0) {
         return true;
     }
 }
 
-function openBag() {
-    console.log('openBag');
+function openBag(bag) {
+    if (checkUsersArrayOnEmpty(users)) {
+        alert('Нету зарегистрированных пользователей!');
+        return;
+    }
+
+
+    console.log('Ваш баланс:');
+    let userMoney = users[users.length - 1].money;
+    console.log(`$${userMoney}`);
+    console.log('-------------------------');
+
+
+    if (checkUsersArrayOnEmpty(bag)) {
+        alert('Корзина пуста!');
+        return;
+    }
+
+
+    console.log('Товары в твоей корзине:');
+    bag.forEach(function (elem) {
+        console.log(elem.title);
+    });
+    console.log('-------------------------');
+
+    
+    console.log('Общая стоймость всех товаров:');
+    function calculationTotalPrice() {
+        let totalPrice = 0;
+
+        bag.forEach(function (elem) {
+            totalPrice += elem.price;
+        });
+
+        return totalPrice;
+    }
+    totalPrice = calculationTotalPrice();
+    console.log(`$${totalPrice}`);
+    console.log('-------------------------');
+
+
+    if (askUserToBuyAllBagItem()) {
+        buyingBagItem(userMoney, totalPrice, bag);
+    } else {
+        return;
+    }
+
 }
+
+function buyingBagItem(money, price, bag) {
+    if (money >= price) {
+        users[users.length - 1].money -= price;
+        bag.splice(0, bag.length); // очищаем корзину от купленных товаров
+    } else {
+        alert('Нужно больше золота!');
+        return;
+    }
+}
+
+function askUserToBuyAllBagItem() {
+    return userChoise = confirm('Вы хотите оформить заказ на все товары в корзине?');
+}
+
+
 
 function exit() {
     alert('До скорого!');
@@ -351,11 +448,11 @@ menu();
 //* - Если возраст юзера  меньше , чем 23 - он не может посетить категорию игрушечный . 
 //* -Кол-во зарегистрированных пользователей не может превышать 5-ти персон .
 
-// Корзина
-// - При покупке - доб товар
-// - Подсчитывать общую сумму 
+//* Корзина
+//* - При покупке - доб товар
+//* - Подсчитывать общую сумму
 
-// Когда пользователь зарегистрирован , он получает первый кэш на который может приобрести что-либо .
-// Если при совершении покупки у юзера не хватает денег - написать сообщение , что “Нужно больше золота” , а иначе просто списать деньги с юзера .
+//* Когда пользователь зарегистрирован , он получает первый кэш на который может приобрести что-либо .
+//* Если при совершении покупки у юзера не хватает денег - написать сообщение , что “Нужно больше золота” , а иначе просто списать деньги с юзера .
 
 //* Программа работает до тех пор пока юзер не захочет выйти.
